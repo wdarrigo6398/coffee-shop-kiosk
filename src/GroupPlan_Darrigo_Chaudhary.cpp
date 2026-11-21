@@ -33,8 +33,6 @@ int main () {
     int cupSizeSelection;
     int numCustomers;
 
-    // if espresso then don't ask for cup size
-
     customerName = promptName();
 
     cout << "\n===Select from the catalog===\n";
@@ -54,7 +52,6 @@ int main () {
     cout << "Cup Size: " << cupSizeSelection << endl;
     cout << "Coffee: " << coffeeSelection << endl;
 
-    // cout << "\npromptName result: " << customerName;
 }
 
 // ─────────────────────────────────────────────────────────────
