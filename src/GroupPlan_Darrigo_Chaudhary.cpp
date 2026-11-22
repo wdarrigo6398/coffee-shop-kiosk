@@ -13,7 +13,8 @@ shortcuts (REMOVE BEFORE SUBMISSION)
 g++ -std=c++17 -Wall -Wextra GroupPlan_Darrigo_Chaudhary.cpp -o GroupPlan_Darrigo_Chaudhary
 
 What's next:
--> remove item
+-> calculate subtotal
+-> calculate total with taxes
 
 customer has an orders collection. Then receipt is printed with recipe_lastname.txt in a folder txt
 we iterate on each customer and build a new orders collection
@@ -28,17 +29,33 @@ bool togglePrompt(const string &question);
 void removeItem(vector<string> &coffeeItems, vector<string> &milkItems, vector<int> &cupSizeItems, int targetIndex);
 void printItem(int cupSize, string coffee, string milk);
 void printOrder(vector<string> coffeeItems, vector<string> milkItems, vector<int> cupSizeItems);
+double calculateSubtotal(
+    double coffeePrices[],
+    double milkPrices[],
+    double cupSizePrices[],
+    vector<int> coffeeItemsIndex,
+    vector<int> milkItemsIndex,
+    vector<int> cupSizeItemsIndex
+);
+double calculateTotal(double subtotal, double taxRate);
+double priceFinder(double prices[], string catalog[], string searchStr, int count);
 
 int main () {
     const int NUM_COFFEE_OPTIONS = 7;
     const int NUM_MILK_OPTIONS = 7;
     const int NUM_CUP_SIZES = 3;
     string coffeeOptions[NUM_COFFEE_OPTIONS] = {"Drip", "Espresso", "Latte", "Cappuccino", "Cortado", "Flat White", "Mocha"};
-    string milkOptions[] = {"Regular", "2 percent (Regular)", "Oat", "Soy", "Almond", "Coconut", "No"};
+    double coffeePrices[NUM_COFFEE_OPTIONS] = {2.99, 2.99, 4.99, 4.50, 3.99, 3.99, 5.50};
+    string milkOptions[NUM_MILK_OPTIONS] = {"Regular", "2 percent (Regular)", "Oat", "Soy", "Almond", "Coconut", "No"};
+    double milkAddOnPrices[NUM_MILK_OPTIONS] = {0, 0, 1.00, 0.75, 0.50, 1.00, 0};
     string cupSizes[NUM_CUP_SIZES] = {"8 oz", "12 oz", "16 oz"};
+    double cupSizesAddOnPrices[NUM_CUP_SIZES] = {0, 2.00, 3.00};
     vector<string> coffeeItems; 
+    vector<int> coffeeItemsIndex;
     vector<string> milkItems;
+    vector<int> milkItemsIndex;
     vector<int> cupSizeItems;
+    vector<int> cupSizeItemsIndex;
     string customerName;
     int milkSelectionIndex;
     int cupSizeSelectionIndex;
@@ -46,10 +63,12 @@ int main () {
     string coffee;
     string milk;
     int cupSize; // in oz
+    double subtotal;
+    double total;
     string numCustomers;
     bool isAddingItem = true;
     bool isRemovingItem = true;
- //   bool isToGo = true;
+    double taxRateIl = 6.25;
 
     numCustomers = promptNumCustomers();
     customerName = promptName();
@@ -104,7 +123,61 @@ int main () {
 
     printOrder(coffeeItems, milkItems, cupSizeItems);
     cout << "Finalizing order..." << "\n";
+    subtotal = calculateSubtotal(coffeePrices, milkAddOnPrices, cupSizesAddOnPrices, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex);
+    total = calculateTotal(subtotal, taxRateIl);
+    
+}
 
+/*─────────────────────────────────────────────────────────────
+Function : calculateSubtotal
+Purpose  : Calculates the subtotal dollar USD amount for the order.
+Parameter: vector<string> &coffeeItems, vector<string> &milkItems, vector<int> &cupSizeItems
+Returns  : double subtotal amount
+Test     : 
+            calculateSubtotal() -> 
+       
+            calculateSubtotal() -> 
+            
+            calculateSubtotal() -> 
+           
+─────────────────────────────────────────────────────────────*/
+double calculateSubtotal(
+    double coffeePrices[],
+    double milkPrices[],
+    double cupSizePrices[],
+    vector<int> coffeeItemsIndex,
+    vector<int> milkItemsIndex,
+    vector<int> cupSizeItemsIndex
+) {
+    double subtotal = 0;
+    double costCup;
+    double costMilk;
+    double costCoffee;
+    int itemSize;
+
+    itemSize = coffeeItemsIndex.size(); // number of items in an order
+
+    for (int i = 0; i < itemSize; i++) {
+        costCoffee = coffeePrices[coffeeItemsIndex[i]];
+        costMilk = milkPrices[milkItemsIndex[i]];
+        costCup = cupSizePrices[cupSizeItemsIndex[i]];
+        subtotal = subtotal + costCoffee + costMilk + costCup;
+    }
+
+    return subtotal;
+}
+
+/*─────────────────────────────────────────────────────────────
+Function : calculateTotal
+Purpose  : Calculates the total dollar USD amount for the order.
+Parameter: double subtotal, double taxRate
+Returns  : double total amount
+Test     :  calculateTotal() ->
+            calculateTotal() ->
+            calculateTotal() ->
+─────────────────────────────────────────────────────────────*/
+double calculateTotal(double subtotal, double taxRate) {
+    return subtotal + subtotal * (taxRate / 100);
 }
 
 /*─────────────────────────────────────────────────────────────
