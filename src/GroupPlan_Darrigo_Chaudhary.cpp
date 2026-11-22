@@ -15,6 +15,8 @@ g++ -std=c++17 -Wall -Wextra GroupPlan_Darrigo_Chaudhary.cpp -o GroupPlan_Darrig
 What's next:
 -> calculate subtotal
 -> calculate total with taxes
+-> calculate total + subtotal + taxes
+-> iterate for each customer
 
 customer has an orders collection. Then receipt is printed with recipe_lastname.txt in a folder txt
 we iterate on each customer and build a new orders collection
@@ -65,66 +67,76 @@ int main () {
     int cupSize; // in oz
     double subtotal;
     double total;
-    string numCustomers;
-    bool isAddingItem = true;
-    bool isRemovingItem = true;
     double taxRateIl = 6.25;
+    int numCustomers;
+    int itemCount;
+    bool isAddingItem;
+    bool isRemovingItem;
 
     numCustomers = promptNumCustomers();
-    customerName = promptName();
 
-    cout << "\n===Select from the catalog===\n";
+    for (int i = 0; i < numCustomers; i++) {
+        cout << "Customer " << i + 1 << ": \n"; 
+        customerName = promptName();
+        isAddingItem = true;
+        cout << "\n===Select from the catalog===\n";
 
-    while (isAddingItem == true) {
-        coffeeSelectionIndex = selectCatalog(NUM_COFFEE_OPTIONS, coffeeOptions, "Coffee");
-        coffee = coffeeOptions[coffeeSelectionIndex];
+        while (isAddingItem == true) {
+            coffeeSelectionIndex = selectCatalog(NUM_COFFEE_OPTIONS, coffeeOptions, "Coffee");
+            coffee = coffeeOptions[coffeeSelectionIndex];
 
-        if (coffeeSelectionIndex == 1) {
-            // espresso has fixed 2 oz size and no milk
-            milk = milkOptions[6]; // no milk
-            cupSize = 2; // 2 oz
-        } else if (coffeeSelectionIndex == 4) {
-            // cortado has fixed 4 oz size with choice of milk
-            cupSize = 4; // 4 oz
-            milkSelectionIndex = selectCatalog(NUM_MILK_OPTIONS, milkOptions, "Milk");
-            milk = milkOptions[milkSelectionIndex];
-        } else {
-            milkSelectionIndex = selectCatalog(NUM_MILK_OPTIONS, milkOptions, "Milk");
-            cupSizeSelectionIndex = selectCatalog(NUM_CUP_SIZES, cupSizes, "Cup Size");
-            cupSize = stringToInt(cupSizes[cupSizeSelectionIndex]);
-            milk = milkOptions[milkSelectionIndex];
+            if (coffeeSelectionIndex == 1) {
+                // espresso has fixed 2 oz size and no milk
+                milk = milkOptions[6]; // no milk
+                cupSize = 2; // 2 oz
+            } else if (coffeeSelectionIndex == 4) {
+                // cortado has fixed 4 oz size with choice of milk
+                cupSize = 4; // 4 oz
+                milkSelectionIndex = selectCatalog(NUM_MILK_OPTIONS, milkOptions, "Milk");
+                milk = milkOptions[milkSelectionIndex];
+            } else {
+                milkSelectionIndex = selectCatalog(NUM_MILK_OPTIONS, milkOptions, "Milk");
+                cupSizeSelectionIndex = selectCatalog(NUM_CUP_SIZES, cupSizes, "Cup Size");
+                cupSize = stringToInt(cupSizes[cupSizeSelectionIndex]);
+                milk = milkOptions[milkSelectionIndex];
+            }
+
+            coffeeItems.push_back(coffee);
+            milkItems.push_back(milk);
+            cupSizeItems.push_back(cupSize);
+
+            cout << "Order Added\n";
+            printItem(cupSize, coffee, milk);
+            string question = "Add another item to your order?";
+            isAddingItem = togglePrompt(question);
         }
 
-        coffeeItems.push_back(coffee);
-        milkItems.push_back(milk);
-        cupSizeItems.push_back(cupSize);
+        do {
+            isRemovingItem = togglePrompt("Do you want to remove an item?");
 
-        cout << "Order Added\n";
-        printItem(cupSize, coffee, milk);
-        string question = "Add another item to your order?";
-        isAddingItem = togglePrompt(question);
-    }
+            if (isRemovingItem == true) {
+                itemCount = coffeeItems.size();
+                int removeItemIndex;
+                cout << "Choose an item from the order to remove (1-" << itemCount << "): " << "\n";
+                printOrder(coffeeItems, milkItems, cupSizeItems);
+                cin >> removeItemIndex;
+                removeItemIndex -= 1; // convert to an index
+                removeItem(coffeeItems, milkItems, cupSizeItems, removeItemIndex);
+            } 
+        } while (isRemovingItem == true);
 
-    while (isRemovingItem == true) {
-        isRemovingItem = togglePrompt("Do you want to remove an item?");
+        itemCount = coffeeItems.size();
 
-        if (isRemovingItem == true) {
-            int itemCount = coffeeItems.size();
-            int removeItemIndex;
-            cout << "Choose an item from the order to remove (1-" << itemCount << "): " << "\n";
+        if (itemCount > 0) {
             printOrder(coffeeItems, milkItems, cupSizeItems);
-            cin >> removeItemIndex;
-            removeItemIndex -= 1; // convert to an index
-            removeItem(coffeeItems, milkItems, cupSizeItems, removeItemIndex);
+            cout << "Finalizing order..." << "\n";
+            subtotal = calculateSubtotal(coffeePrices, milkAddOnPrices, cupSizesAddOnPrices, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex);
+            total = calculateTotal(subtotal, taxRateIl);
+        } else {
+            cout << "No items in order. Closing order. \n";
         } 
+
     }
-
-    // consider case of no orders.. customer should not pay and exit
-
-    printOrder(coffeeItems, milkItems, cupSizeItems);
-    cout << "Finalizing order..." << "\n";
-    subtotal = calculateSubtotal(coffeePrices, milkAddOnPrices, cupSizesAddOnPrices, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex);
-    total = calculateTotal(subtotal, taxRateIl);
     
 }
 
@@ -356,6 +368,7 @@ string promptName() {
     string name;
     cout << "Welcome to Oakton Hot Coffee!" << endl;
     cout << "Enter your name: ";
+    cin.ignore();
     getline(cin, name); // TODO: careful here may need cin.ignore()
 
     if (name == "") {
@@ -382,7 +395,6 @@ int promptNumCustomers() {
     do {
         cout << "Number of customers in line: ";
         cin >> numCustomers;
-        cin.ignore();
         if (numCustomers == 0) {
             cout << "Waiting for customers to get in line...\n";
         }
