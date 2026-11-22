@@ -265,3 +265,136 @@ T11 Edge
         Waiting for customers to get in line...
         Number of customers in line: 
     Result: P
+
+T12 Normal
+    Input: 1 customer; 2 items on an order: espresso, latte with oatmilk. 
+    Expected: Total should be 9.54
+    Actual: 
+        ===Select from the catalog===
+    Coffee: 
+    1. Drip
+    2. Espresso
+    3. Latte
+    4. Cappuccino
+    5. Cortado
+    6. Flat White
+    7. Mocha
+
+    Selection (1-7): 2
+
+    Order Added
+    2oz size Espresso with No milk
+    Add another item to your order? (Y/N): y
+    Coffee: 
+    1. Drip
+    2. Espresso
+    3. Latte
+    4. Cappuccino
+    5. Cortado
+    6. Flat White
+    7. Mocha
+
+    Selection (1-7): 3
+
+    Milk: 
+    1. Regular
+    2. 2 percent (Regular)
+    3. Oat
+    4. Soy
+    5. Almond
+    6. Coconut
+    7. No
+
+    Selection (1-7): 3
+
+    Cup Size: 
+    1. 8 oz
+    2. 12 oz
+    3. 16 oz
+
+    Selection (1-3): 1
+
+    Order Added
+    8oz size Latte with Oat milk
+    Add another item to your order? (Y/N): n
+    Do you want to remove an item? (Y/N): n
+    1. 2oz size Espresso with No milk
+    2. 8oz size Latte with Oat milk
+    Finalizing order...
+    Subtotal: 8.98
+    Total: 9.54
+    Result: 
+
+T13 Edge
+    Input: 1 customer; 2 items on an order, then remove the 2 items
+    Expected: Kiosk should not calculate total and gracefully exit order
+    Actual: 
+        ===Select from the catalog===
+    Coffee: 
+    1. Drip
+    2. Espresso
+    3. Latte
+    4. Cappuccino
+    5. Cortado
+    6. Flat White
+    7. Mocha
+
+    Selection (1-7): 2
+
+    Order Added
+    2oz size Espresso with No milk
+    Add another item to your order? (Y/N): y
+    Coffee: 
+    1. Drip
+    2. Espresso
+    3. Latte
+    4. Cappuccino
+    5. Cortado
+    6. Flat White
+    7. Mocha
+
+    Selection (1-7): 3
+
+    Milk: 
+    1. Regular
+    2. 2 percent (Regular)
+    3. Oat
+    4. Soy
+    5. Almond
+    6. Coconut
+    7. No
+
+    Selection (1-7): 3
+
+    Cup Size: 
+    1. 8 oz
+    2. 12 oz
+    3. 16 oz
+
+    Selection (1-3): 1
+
+    Order Added
+    8oz size Latte with Oat milk
+    Add another item to your order? (Y/N): n
+    Do you want to remove an item? (Y/N): y
+
+    Choose an item from the order to remove (1-2): 
+    1. 2oz size Espresso with No milk
+    2. 8oz size Latte with Oat milk
+    Item Number: 3
+    Item not found.
+    Do you want to remove an item? (Y/N): y
+
+    Choose an item from the order to remove (1-2): 
+    1. 2oz size Espresso with No milk
+    2. 8oz size Latte with Oat milk
+    Item Number: 2
+    Removing: 8oz size Latte with Oat milk
+    Do you want to remove an item? (Y/N): y
+
+    Choose an item from the order to remove (1-1): 
+    1. 2oz size Espresso with No milk
+    Item Number: 1
+    Removing: 2oz size Espresso with No milk
+    No items in order. Closing order. 
+    Result: P
