@@ -3,27 +3,23 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <fstream>
 
 using namespace std;
-
-
-/*
-shortcuts (REMOVE BEFORE SUBMISSION)
-./GroupLab_Darrigo_Chaudhary
-g++ -std=c++17 -Wall -Wextra GroupLab_Darrigo_Chaudhary.cpp -o GroupLab_Darrigo_Chaudhary
-
-What's next:
--> print receipts for every customer following the format receipt_name.txt in a receipts folder
--> will need a function to convert name to underscore snakecase
--> use a format from previous lab txt output
-*/
 
 int promptNumCustomers();
 string promptName();
 int selectCatalog(const int numOptions, string options[], const string label);
 int stringToInt(string str);
 bool togglePrompt(const string &question);
-void removeItem(vector<string> &coffeeItems, vector<string> &milkItems, vector<int> &cupSizeItems, int targetIndex);
+void removeItem(vector<string> &coffeeItems, 
+    vector<string> &milkItems, 
+    vector<int> &cupSizeItems,
+    vector<int> &coffeeItemsIndex,
+    vector<int> &milkItemsIndex,
+    vector<int> &cupSizeItemsIndex,
+    int targetIndex
+);
 void printItem(int cupSize, string coffee, string milk);
 void printOrder(vector<string> coffeeItems, vector<string> milkItems, vector<int> cupSizeItems);
 double calculateSubtotal(
@@ -63,11 +59,19 @@ int main () {
     double subtotal;
     double total;
     double taxRateIl = 6.25;
+    double taxes;
     int numCustomers;
     int itemCount;
     bool isAddingItem;
     bool isRemovingItem;
     bool isEmptyOrder;
+    double costCoffee;
+    double costMilk;
+    double costCup;
+    double itemSubtotal;
+
+    ofstream outFile;
+    outFile.open("receipts.txt");
 
     numCustomers = promptNumCustomers();
 
@@ -130,25 +134,50 @@ int main () {
                 cout << "Item Number: ";
                 cin >> removeItemIndex;
                 removeItemIndex -= 1; // convert to an index
-                removeItem(coffeeItems, milkItems, cupSizeItems, removeItemIndex);
+                removeItem(coffeeItems, milkItems, cupSizeItems, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex, removeItemIndex);
             }
             isEmptyOrder = coffeeItems.empty();
         } while (isRemovingItem == true && isEmptyOrder == false);
 
-        if (isEmptyOrder == false) {
+        if (isEmptyOrder == false) {\
+            cout << "\nOrder Summary: \n";
             printOrder(coffeeItems, milkItems, cupSizeItems);
-            cout << "Finalizing order..." << "\n";
             subtotal = calculateSubtotal(coffeePrices, milkAddOnPrices, cupSizesAddOnPrices, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex);
             total = calculateTotal(subtotal, taxRateIl);
-            cout << fixed << setprecision(2);
-            cout << "Subtotal: " << subtotal << "\n";
-            cout << "Total: " << total;
+            taxes = subtotal * (taxRateIl / 100);
+            cout << "\nReceipt Printed. See receipts.txt.\n";
+            cout << "\n";
+            outFile << fixed << setprecision(2);
+            outFile << "============================================\n"
+                << setw(12) << "" << "OAKTON HOT COFFEE\n"
+                << setw(8) << "" << "123 Main St, Des Plaines\n"
+                << setw(15) << "" << "(555)555-5555"
+                << "\n============================================\n";
+            outFile << "\n";
+            outFile << "Name: " << setw(24) << customerName << "\n";
+            outFile << "Order:\n";
+            
+            for (size_t i=0; i < coffeeItems.size(); i++) {
+                costCoffee = coffeePrices[coffeeItemsIndex[i]];
+                costMilk = milkAddOnPrices[milkItemsIndex[i]];
+                costCup = cupSizesAddOnPrices[cupSizeItemsIndex[i]];
+                itemSubtotal = costCoffee + costMilk + costCup;
+                outFile << cupSizeItems[i] << "oz size " << coffeeItems[i] 
+                    << " with " << milkItems[i] << " milk" << "\n"
+                    << setw(8) << itemSubtotal << "\n";
+            }
+
+            outFile << "Subtotal: " << setw(20) << subtotal << "\n";
+            outFile << "Tax: " << setw(25) << taxes << "\n";
+            outFile << "Total: " << setw(23) << total << "\n" << "\n";
+            
         } else {
             cout << "No items in order. Closing order. \n";
         } 
 
     }
     
+    outFile.close();
 }
 
 /*─────────────────────────────────────────────────────────────
@@ -187,6 +216,14 @@ double calculateSubtotal(
         costCoffee = coffeePrices[coffeeItemsIndex[i]];
         costMilk = milkPrices[milkItemsIndex[i]];
         costCup = cupSizePrices[cupSizeItemsIndex[i]];
+
+        // edge case: fixed cup sizes for cortados and espressos will be $0 addon cost
+        if (cupSizeItemsIndex[i] == -1) {
+            costCup = 0;
+        } else {
+            costCup = cupSizePrices[cupSizeItemsIndex[i]];
+        }
+
         subtotal = subtotal + costCoffee + costMilk + costCup;
     }
 
@@ -220,10 +257,21 @@ Test     :
             removeItem(coffeeItems, milkItems, cupSizeItems, 2) -> after printOrder
                 Removing: 8oz size Latte with Oat milk
 ─────────────────────────────────────────────────────────────*/
-void removeItem(vector<string> &coffeeItems, vector<string> &milkItems, vector<int> &cupSizeItems, int targetIndex) {
+void removeItem(
+    vector<string> &coffeeItems, 
+    vector<string> &milkItems, 
+    vector<int> &cupSizeItems,
+    vector<int> &coffeeItemsIndex,
+    vector<int> &milkItemsIndex,
+    vector<int> &cupSizeItemsIndex,
+    int targetIndex
+) {
     vector<string> updatedCoffeeItems;
     vector<string> updatedMilkItems;
     vector<int> updatedCupSizeItems;
+    vector<int> updatedCoffeeItemsIndex;
+    vector<int> updatedMilkItemsIndex;
+    vector<int> updatedCupSizeItemsIndex;
     int count = coffeeItems.size();
 
     if (targetIndex >= count || targetIndex < 0) {
@@ -236,6 +284,9 @@ void removeItem(vector<string> &coffeeItems, vector<string> &milkItems, vector<i
             updatedCoffeeItems.push_back(coffeeItems[i]);
             updatedMilkItems.push_back(milkItems[i]);
             updatedCupSizeItems.push_back(cupSizeItems[i]);
+            updatedCoffeeItemsIndex.push_back(coffeeItemsIndex[i]);
+            updatedMilkItemsIndex.push_back(milkItemsIndex[i]);
+            updatedCupSizeItemsIndex.push_back(cupSizeItemsIndex[i]);
         } else {
             cout << "Removing: ";
             printItem(cupSizeItems[i], coffeeItems[i], milkItems[i]);
@@ -245,6 +296,9 @@ void removeItem(vector<string> &coffeeItems, vector<string> &milkItems, vector<i
     coffeeItems = updatedCoffeeItems;
     milkItems = updatedMilkItems;
     cupSizeItems = updatedCupSizeItems;
+    coffeeItemsIndex = updatedCoffeeItemsIndex;
+    milkItemsIndex = updatedMilkItemsIndex;
+    cupSizeItemsIndex = updatedCupSizeItemsIndex;
 }
 
 // ─────────────────────────────────────────────────────────────

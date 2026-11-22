@@ -398,3 +398,112 @@ T13 Edge
     Removing: 2oz size Espresso with No milk
     No items in order. Closing order. 
     Result: P
+
+T14 Error
+    Input: 2 customers 
+    Expected: reciepts.txt containing correct order information
+    Actual:
+    ============================================
+                OAKTON HOT COFFEE
+            123 Main St, Des Plaines
+                (555)555-5555
+    ============================================
+
+    Name:               John Smith
+    Order:
+    2oz size Espresso with No milk
+        2.99
+    4oz size Cortado with Oat milk
+        4.99
+    12oz size Latte with Oat milk
+        7.99
+    Subtotal:                15.97
+    Tax:                      6.25
+    Total:                 16.9681
+
+    ============================================
+                OAKTON HOT COFFEE
+            123 Main St, Des Plaines
+                (555)555-5555
+    ============================================
+
+    Name:           Jennifer Smith
+    Order:
+    16oz size Mocha with Oat milk
+        9.5
+    8oz size Flat White with Soy milk
+        4.99
+    Subtotal:                19.23
+    Tax:                      6.25
+    Total:                 20.4319
+
+
+    Result: F
+
+T15 Normal
+    Input:  2 customers
+    Expected: Correct order information in receipts.txt
+    Actual:
+        ============================================
+            OAKTON HOT COFFEE
+        123 Main St, Des Plaines
+               (555)555-5555
+        ============================================
+
+        Name:               John Smith
+        Order:
+        8oz size Drip with Regular milk
+            2.99
+        12oz size Latte with Oat milk
+            7.99
+        Subtotal:                10.98
+        Tax:                      0.69
+        Total:                   11.67
+
+        ============================================
+                    OAKTON HOT COFFEE
+                123 Main St, Des Plaines
+                    (555)555-5555
+        ============================================
+
+        Name:                Jen Smith
+        Order:
+        4oz size Cortado with Oat milk
+            4.99
+        2oz size Espresso with No milk
+            2.99
+        Subtotal:                 7.98
+        Tax:                      0.50
+        Total:                    8.48
+
+    Result: P
+
+T16 Error
+    Input: 1 customer, remove an item from the order
+    Expected: Verify that the info matches in the receipt
+    Actual: 
+        
+    Name:                     john
+    Order:
+    2oz size Espresso with No milk
+        5.99
+    8oz size Cappuccino with Soy milk
+        2.99
+    Subtotal:                14.23
+    Tax:                      0.89
+    Total:                   15.12
+
+    Result: F - prices do not match with item
+
+T17 Normal
+    Input: 1 customer. Remove item before printing receipt
+    Expected: Prices should match
+    Actual:   
+        Name:                     John
+        Order:
+        16oz size Latte with Oat milk
+            8.99
+        Subtotal:                 8.99
+        Tax:                      0.56
+        Total:                    9.55
+    Result: P
