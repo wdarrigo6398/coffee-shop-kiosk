@@ -39,3 +39,96 @@ T4 Edge
         Cup Size: -1
         Coffee: 1
     Result: P
+
+T5 Normal
+    Input: 1 customer. First order: 8oz latte regular milk; Second Order: 12oz cappuccino oat milk.
+    Expected: Should prompt order twice for that customer. Every item should be displayed.
+    Actual:
+    Result: 
+        Coffee: 
+        1. Drip
+        2. Espresso
+        3. Latte
+        4. Cappuccino
+        5. Cortado
+        6. Flat White
+        7. Mocha
+
+        Selection (1-7): 3
+
+        Milk: 
+        1. Regular
+        2. 2 percent (Regular)
+        3. Oat
+        4. Soy
+        5. Almond
+        6. Coconut
+        7. No
+
+        Selection (1-7): 1
+
+        Cup Size: 
+        1. 8 oz
+        2. 12 oz
+        3. 16 oz
+
+        Selection (1-3): 1
+
+        Order Added
+        8oz size Latte with Regular milk
+        Add another item to your order? (Y/N): y
+        Coffee: 
+        1. Drip
+        2. Espresso
+        3. Latte
+        4. Cappuccino
+        5. Cortado
+        6. Flat White
+        7. Mocha
+
+        Selection (1-7): 4
+
+        Milk: 
+        1. Regular
+        2. 2 percent (Regular)
+        3. Oat
+        4. Soy
+        5. Almond
+        6. Coconut
+        7. No
+
+        Selection (1-7): 3
+
+        Cup Size: 
+        1. 8 oz
+        2. 12 oz
+        3. 16 oz
+
+        Selection (1-3): 2
+
+        Order Added
+        12oz size Cappuccino with Oat milk
+        Add another item to your order? (Y/N): n
+
+T6 Edge
+    Input: 1 customer. Espresso coffee.
+    Expected: For espresso, order should have no milk, and be fixed 2oz size. 
+    Actual: 
+        ===Select from the catalog===
+    Coffee: 
+    1. Drip
+    2. Espresso
+    3. Latte
+    4. Cappuccino
+    5. Cortado
+    6. Flat White
+    7. Mocha
+
+    Selection (1-7): 2
+
+    Order Added
+    2oz size Espresso with No milk
+    Add another item to your order? (Y/N): n
+
+    Result: P
+
