@@ -9,18 +9,13 @@ using namespace std;
 
 /*
 shortcuts (REMOVE BEFORE SUBMISSION)
-./GroupPlan_Darrigo_Chaudhary
-g++ -std=c++17 -Wall -Wextra GroupPlan_Darrigo_Chaudhary.cpp -o GroupPlan_Darrigo_Chaudhary
+./GroupLab_Darrigo_Chaudhary
+g++ -std=c++17 -Wall -Wextra GroupLab_Darrigo_Chaudhary.cpp -o GroupLab_Darrigo_Chaudhary
 
 What's next:
--> calculate subtotal
--> calculate total with taxes
--> calculate total + subtotal + taxes
--> iterate for each customer
-
-customer has an orders collection. Then receipt is printed with recipe_lastname.txt in a folder txt
-we iterate on each customer and build a new orders collection
-
+-> print receipts for every customer following the format receipt_name.txt in a receipts folder
+-> will need a function to convert name to underscore snakecase
+-> use a format from previous lab txt output
 */
 
 int promptNumCustomers();
@@ -40,7 +35,6 @@ double calculateSubtotal(
     vector<int> cupSizeItemsIndex
 );
 double calculateTotal(double subtotal, double taxRate);
-double priceFinder(double prices[], string catalog[], string searchStr, int count);
 
 int main () {
     const int NUM_COFFEE_OPTIONS = 7;
@@ -62,6 +56,7 @@ int main () {
     int milkSelectionIndex;
     int cupSizeSelectionIndex;
     int coffeeSelectionIndex;
+    int removeItemIndex;
     string coffee;
     string milk;
     int cupSize; // in oz
@@ -72,10 +67,19 @@ int main () {
     int itemCount;
     bool isAddingItem;
     bool isRemovingItem;
+    bool isEmptyOrder;
 
     numCustomers = promptNumCustomers();
 
     for (int i = 0; i < numCustomers; i++) {
+        // clear saved values from previous order
+        coffeeItems.clear();
+        milkItems.clear();
+        cupSizeItems.clear();
+        coffeeItemsIndex.clear();
+        milkItemsIndex.clear();
+        cupSizeItemsIndex.clear();
+
         cout << "Customer " << i + 1 << ": \n"; 
         customerName = promptName();
         isAddingItem = true;
@@ -87,11 +91,14 @@ int main () {
 
             if (coffeeSelectionIndex == 1) {
                 // espresso has fixed 2 oz size and no milk
-                milk = milkOptions[6]; // no milk
+                milkSelectionIndex = 6;
+                milk = milkOptions[milkSelectionIndex]; // no milk
                 cupSize = 2; // 2 oz
+                cupSizeSelectionIndex = -1; // uses special cup that is not list
             } else if (coffeeSelectionIndex == 4) {
                 // cortado has fixed 4 oz size with choice of milk
                 cupSize = 4; // 4 oz
+                cupSizeSelectionIndex = -1; // uses special cup that is not list
                 milkSelectionIndex = selectCatalog(NUM_MILK_OPTIONS, milkOptions, "Milk");
                 milk = milkOptions[milkSelectionIndex];
             } else {
@@ -102,8 +109,11 @@ int main () {
             }
 
             coffeeItems.push_back(coffee);
+            coffeeItemsIndex.push_back(coffeeSelectionIndex);
             milkItems.push_back(milk);
+            milkItemsIndex.push_back(milkSelectionIndex);
             cupSizeItems.push_back(cupSize);
+            cupSizeItemsIndex.push_back(cupSizeSelectionIndex);
 
             cout << "Order Added\n";
             printItem(cupSize, coffee, milk);
@@ -113,25 +123,26 @@ int main () {
 
         do {
             isRemovingItem = togglePrompt("Do you want to remove an item?");
-
             if (isRemovingItem == true) {
                 itemCount = coffeeItems.size();
-                int removeItemIndex;
-                cout << "Choose an item from the order to remove (1-" << itemCount << "): " << "\n";
+                cout << "\n" << "Choose an item from the order to remove (1-" << itemCount << "): " << "\n";
                 printOrder(coffeeItems, milkItems, cupSizeItems);
+                cout << "Item Number: ";
                 cin >> removeItemIndex;
                 removeItemIndex -= 1; // convert to an index
                 removeItem(coffeeItems, milkItems, cupSizeItems, removeItemIndex);
-            } 
-        } while (isRemovingItem == true);
+            }
+            isEmptyOrder = coffeeItems.empty();
+        } while (isRemovingItem == true && isEmptyOrder == false);
 
-        itemCount = coffeeItems.size();
-
-        if (itemCount > 0) {
+        if (isEmptyOrder == false) {
             printOrder(coffeeItems, milkItems, cupSizeItems);
             cout << "Finalizing order..." << "\n";
             subtotal = calculateSubtotal(coffeePrices, milkAddOnPrices, cupSizesAddOnPrices, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex);
             total = calculateTotal(subtotal, taxRateIl);
+            cout << fixed << setprecision(2);
+            cout << "Subtotal: " << subtotal << "\n";
+            cout << "Total: " << total;
         } else {
             cout << "No items in order. Closing order. \n";
         } 
@@ -146,12 +157,15 @@ Purpose  : Calculates the subtotal dollar USD amount for the order.
 Parameter: vector<string> &coffeeItems, vector<string> &milkItems, vector<int> &cupSizeItems
 Returns  : double subtotal amount
 Test     : 
-            calculateSubtotal() -> 
-       
-            calculateSubtotal() -> 
-            
-            calculateSubtotal() -> 
-           
+            1 espresso
+            calculateSubtotal(coffeePrices, milkPrices, cupSizePrices, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex) -> 
+                2.99
+            1 latte with oatmilk, 1 cortado with regular milk
+            calculateSubtotal(coffeePrices, milkPrices, cupSizePrices, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex) -> 
+                9.98
+            1 16oz mocha almond with milk
+            calculateSubtotal(coffeePrices, milkPrices, cupSizePrices, coffeeItemsIndex, milkItemsIndex, cupSizeItemsIndex) -> 
+                9.00
 ─────────────────────────────────────────────────────────────*/
 double calculateSubtotal(
     double coffeePrices[],
@@ -184,9 +198,9 @@ Function : calculateTotal
 Purpose  : Calculates the total dollar USD amount for the order.
 Parameter: double subtotal, double taxRate
 Returns  : double total amount
-Test     :  calculateTotal() ->
-            calculateTotal() ->
-            calculateTotal() ->
+Test     :  calculateTotal(2.99, 6.25) -> 3.18
+            calculateTotal(9.98, 6.25) -> 10.60
+            calculateTotal(9.00, 6.25) -> 9.56
 ─────────────────────────────────────────────────────────────*/
 double calculateTotal(double subtotal, double taxRate) {
     return subtotal + subtotal * (taxRate / 100);
@@ -211,6 +225,11 @@ void removeItem(vector<string> &coffeeItems, vector<string> &milkItems, vector<i
     vector<string> updatedMilkItems;
     vector<int> updatedCupSizeItems;
     int count = coffeeItems.size();
+
+    if (targetIndex >= count || targetIndex < 0) {
+        cout << "Item not found.\n";
+        return;
+    }
 
     for (int i = 0; i < count; i++) {
         if (targetIndex != i) {
