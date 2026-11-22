@@ -132,3 +132,27 @@ T6 Edge
 
     Result: P
 
+T7 Normal
+    Input: 1 customer; 3 items on an order; espresso, cortado with oat, latte with regular 8oz. Remove cortado
+    Expected: cortado should be removed from the order.
+    Actual: 
+        Do you want to remove an item? (Y/N): y
+        Choose an item from the order to remove (1-3): 
+        1. 2oz size Espresso with No milk
+        2. 4oz size Cortado with Oat milk
+        3. 8oz size Latte with Regular milk
+        2
+        Removing: 4oz size Cortado with Oat milk
+        Do you want to remove an item? (Y/N): n
+        1. 2oz size Espresso with No milk
+        2. 8oz size Latte with Regular milk
+        Finalizing order...
+
+T8 Edge
+    Input: 1 customer; 1 item on order; remove the only item
+    Expected: Should not print the order as there are no items. 
+        Removing: 2oz size Espresso with No milk
+    Actual:    
+        Do you want to remove an item? (Y/N): n
+        Finalizing order...
+    Result: P
