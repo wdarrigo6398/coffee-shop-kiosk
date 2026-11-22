@@ -1,6 +1,3 @@
-purpose, features, C++17 build/run instructions, input/data requirements, and known limitations;
-
-
 # Coffee Shop Kiosk
 
 ## Purpose
