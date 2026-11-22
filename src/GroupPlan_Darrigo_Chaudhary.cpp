@@ -25,6 +25,9 @@ string promptName();
 int selectCatalog(const int numOptions, string options[], const string label);
 int stringToInt(string str);
 bool togglePrompt(const string &question);
+void removeItem(vector<string> &coffeeItems, vector<string> &milkItems, vector<int> &cupSizeItems, int targetIndex);
+void printItem(int cupSize, string coffee, string milk);
+void printOrder(vector<string> coffeeItems, vector<string> milkItems, vector<int> cupSizeItems);
 
 int main () {
     const int NUM_COFFEE_OPTIONS = 7;
@@ -33,20 +36,20 @@ int main () {
     string coffeeOptions[NUM_COFFEE_OPTIONS] = {"Drip", "Espresso", "Latte", "Cappuccino", "Cortado", "Flat White", "Mocha"};
     string milkOptions[] = {"Regular", "2 percent (Regular)", "Oat", "Soy", "Almond", "Coconut", "No"};
     string cupSizes[NUM_CUP_SIZES] = {"8 oz", "12 oz", "16 oz"};
-    vector<string> coffeeOrders; 
-    vector<string> milkOrders;
-    vector<int> cupOrders;
-    bool isToGo = true; // may add function bool toggleSwitch(string label)
+    vector<string> coffeeItems; 
+    vector<string> milkItems;
+    vector<int> cupSizeItems;
     string customerName;
     int milkSelectionIndex;
     int cupSizeSelectionIndex;
     int coffeeSelectionIndex;
-    int numCustomersIndex;
     string coffee;
     string milk;
     int cupSize; // in oz
     string numCustomers;
     bool isAddingItem = true;
+    bool isRemovingItem = true;
+ //   bool isToGo = true;
 
     numCustomers = promptNumCustomers();
     customerName = promptName();
@@ -61,6 +64,11 @@ int main () {
             // espresso has fixed 2 oz size and no milk
             milk = milkOptions[6]; // no milk
             cupSize = 2; // 2 oz
+        } else if (coffeeSelectionIndex == 4) {
+            // cortado has fixed 4 oz size with choice of milk
+            cupSize = 4; // 4 oz
+            milkSelectionIndex = selectCatalog(NUM_MILK_OPTIONS, milkOptions, "Milk");
+            milk = milkOptions[milkSelectionIndex];
         } else {
             milkSelectionIndex = selectCatalog(NUM_MILK_OPTIONS, milkOptions, "Milk");
             cupSizeSelectionIndex = selectCatalog(NUM_CUP_SIZES, cupSizes, "Cup Size");
@@ -68,16 +76,115 @@ int main () {
             milk = milkOptions[milkSelectionIndex];
         }
 
-        coffeeOrders.push_back(coffee);
-        milkOrders.push_back(milk);
-        cupOrders.push_back(cupSize);
+        coffeeItems.push_back(coffee);
+        milkItems.push_back(milk);
+        cupSizeItems.push_back(cupSize);
 
         cout << "Order Added\n";
-        cout << cupSize << "oz size " << coffee << " with " << milk << " milk\n";
+        printItem(cupSize, coffee, milk);
         string question = "Add another item to your order?";
         isAddingItem = togglePrompt(question);
     }
 
+    while (isRemovingItem == true) {
+        isRemovingItem = togglePrompt("Do you want to remove an item?");
+
+        if (isRemovingItem == true) {
+            int itemCount = coffeeItems.size();
+            int removeItemIndex;
+            cout << "Choose an item from the order to remove (1-" << itemCount << "): " << "\n";
+            printOrder(coffeeItems, milkItems, cupSizeItems);
+            cin >> removeItemIndex;
+            removeItemIndex -= 1; // convert to an index
+            removeItem(coffeeItems, milkItems, cupSizeItems, removeItemIndex);
+        } 
+    }
+
+    // consider case of no orders.. customer should not pay and exit
+
+    printOrder(coffeeItems, milkItems, cupSizeItems);
+    cout << "Finalizing order..." << "\n";
+
+}
+
+/*─────────────────────────────────────────────────────────────
+Function : removeItem
+Purpose  : Removes Item from an order
+Parameter: vector<string> &coffeeItems, vector<string> &milkItems, vector<int> &cupSizeItems, int targetIndex
+Returns  : void
+Test     : 
+        1 order with 3 items: espresso, latte with oat 8oz, Mocha with regular 2 percent 12oz
+            removeItem(coffeeItems, milkItems, cupSizeItems, 1) -> prints
+                Removing: 2oz size Espresso with No milk
+            removeItem(coffeeItems, milkItems, cupSizeItems, 3) -> prints
+                Removing: 12oz size Mocha with 2 percent (Regular) milk
+            removeItem(coffeeItems, milkItems, cupSizeItems, 2) -> after printOrder
+                Removing: 8oz size Latte with Oat milk
+─────────────────────────────────────────────────────────────*/
+void removeItem(vector<string> &coffeeItems, vector<string> &milkItems, vector<int> &cupSizeItems, int targetIndex) {
+    vector<string> updatedCoffeeItems;
+    vector<string> updatedMilkItems;
+    vector<int> updatedCupSizeItems;
+    int count = coffeeItems.size();
+
+    for (int i = 0; i < count; i++) {
+        if (targetIndex != i) {
+            updatedCoffeeItems.push_back(coffeeItems[i]);
+            updatedMilkItems.push_back(milkItems[i]);
+            updatedCupSizeItems.push_back(cupSizeItems[i]);
+        } else {
+            cout << "Removing: ";
+            printItem(cupSizeItems[i], coffeeItems[i], milkItems[i]);
+        }
+    }
+
+    coffeeItems = updatedCoffeeItems;
+    milkItems = updatedMilkItems;
+    cupSizeItems = updatedCupSizeItems;
+}
+
+// ─────────────────────────────────────────────────────────────
+// Function : printItem
+// Purpose  : Prints formatted item
+// Parameter: int cupSize, string coffee, string milk
+// Returns  : void
+// Test     : printItem(2, "Espresso", "No") -> 2oz size Espresso with No milk
+//            printItem(12, "Latte", "Regular") -> 12oz size Latte with Regular milk
+//            printItem(8, "Cappuccino", "Oat") -> 8oz size Cappuccino with Oat milk
+// ─────────────────────────────────────────────────────────────
+void printItem(int cupSize, string coffee, string milk) {
+    cout << cupSize << "oz size " << coffee << " with " << milk << " milk\n";
+}
+
+/*─────────────────────────────────────────────────────────────
+Function : printOrder
+Purpose  : Prints formatted order
+Parameter: vector<string> coffeeItems, vector<string> milkItems, vector<int> cupSizeItems
+Returns  : void
+Test     : 
+            Input single item, espresso.
+            printOrder(coffeeItems, milkItems, cupSizeItems) -> prints
+                1. 2oz size Espresso with No milk
+            Input 2 items, espresso, and latte with oat 8oz
+            printOrder(coffeeItems, milkItems, cupSizeItems) -> prints
+                1. 2oz size Espresso with No milk
+                2. 8oz size Latte with Oat milk
+            Input 3 items, espresso, latte with oat 8oz, cortado regular
+            printOrder(coffeeItems, milkItems, cupSizeItems) -> prints
+                1. 2oz size Espresso with No milk
+                2. 8oz size Latte with Oat milk
+                3. 4oz size Cortado with Regular milk
+─────────────────────────────────────────────────────────────/*/
+void printOrder(vector<string> coffeeItems, vector<string> milkItems, vector<int> cupSizeItems) {
+    int count = coffeeItems.size();
+
+    for (int i = 0; i < count; i++) {
+        string coffee = coffeeItems[i];
+        string milk = milkItems[i];
+        int size = cupSizeItems[i];
+        cout << i + 1 << ". ";
+        printItem(size, coffee, milk);
+    }
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -109,8 +216,9 @@ int stringToInt(string str) {
     string digitsOnly = "";
     char zero = '0';
     char nine = '9';
+    int count = str.length();
 
-    for (int i = 0; i < str.length(); i++) {
+    for (int i = 0; i < count; i++) {
         char c = str[i];
 
         // comparing ASCII values for 0-9
@@ -213,8 +321,4 @@ int promptNumCustomers() {
     } while(numCustomers > 5 || numCustomers <= 0);
 
     return numCustomers;
-}
-
-void addItem(string item) {
-
 }
