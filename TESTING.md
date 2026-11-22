@@ -156,3 +156,112 @@ T8 Edge
         Do you want to remove an item? (Y/N): n
         Finalizing order...
     Result: P
+
+T9 Error
+    Input: 2 customers
+    Expected: Should prompt both customers for their orders, then print the order.
+    Actual:
+        Enter your name: John
+        Hi John
+
+        ===Select from the catalog===
+        Coffee: 
+        1. Drip
+        2. Espresso
+        3. Latte
+        4. Cappuccino
+        5. Cortado
+        6. Flat White
+        7. Mocha
+
+        Selection (1-7): 2
+
+        Order Added
+        2oz size Espresso with No milk
+        Add another item to your order? (Y/N): n
+        Do you want to remove an item? (Y/N): n
+        1. 2oz size Espresso with No milk
+        Finalizing order...
+    Result: F
+
+T10 Normal
+    Input: 2 customers
+    Expected: Should prompt both customers for their orders, then print the order.
+    Actual: 
+        Number of customers in line: 2
+        Customer 1: 
+        Welcome to Oakton Hot Coffee!
+        Enter your name: John
+        Hi John
+
+        ===Select from the catalog===
+        Coffee: 
+        1. Drip
+        2. Espresso
+        3. Latte
+        4. Cappuccino
+        5. Cortado
+        6. Flat White
+        7. Mocha
+
+        Selection (1-7): 2
+
+        Order Added
+        2oz size Espresso with No milk
+        Add another item to your order? (Y/N): n
+        Do you want to remove an item? (Y/N): n
+        1. 2oz size Espresso with No milk
+        Finalizing order...
+        Customer 2: 
+        Welcome to Oakton Hot Coffee!
+        Enter your name: Jane
+        Hi Jane
+
+        ===Select from the catalog===
+        Coffee: 
+        1. Drip
+        2. Espresso
+        3. Latte
+        4. Cappuccino
+        5. Cortado
+        6. Flat White
+        7. Mocha
+
+        Selection (1-7): 3
+
+        Milk: 
+        1. Regular
+        2. 2 percent (Regular)
+        3. Oat
+        4. Soy
+        5. Almond
+        6. Coconut
+        7. No
+
+        Selection (1-7): 1
+
+        Cup Size: 
+        1. 8 oz
+        2. 12 oz
+        3. 16 oz
+
+        Selection (1-3): 1
+
+        Order Added
+        8oz size Latte with Regular milk
+        Add another item to your order? (Y/N): n
+        Do you want to remove an item? (Y/N): n
+        1. 2oz size Espresso with No milk
+        2. 8oz size Latte with Regular milk
+        Finalizing order...
+    Result: P
+
+T11 Edge
+    Input: 0 customers
+    Expected: Should give warning message that there are no customes waiting in line, then ask again for
+        customers in line.
+    Actual:
+        Number of customers in line: 0
+        Waiting for customers to get in line...
+        Number of customers in line: 
+    Result: P
