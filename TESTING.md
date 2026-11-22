@@ -477,3 +477,33 @@ T15 Normal
         Total:                    8.48
 
     Result: P
+
+T16 Error
+    Input: 1 customer, remove an item from the order
+    Expected: Verify that the info matches in the receipt
+    Actual: 
+        
+    Name:                     john
+    Order:
+    2oz size Espresso with No milk
+        5.99
+    8oz size Cappuccino with Soy milk
+        2.99
+    Subtotal:                14.23
+    Tax:                      0.89
+    Total:                   15.12
+
+    Result: F - prices do not match with item
+
+T17 Normal
+    Input: 1 customer. Remove item before printing receipt
+    Expected: Prices should match
+    Actual:   
+        Name:                     John
+        Order:
+        16oz size Latte with Oat milk
+            8.99
+        Subtotal:                 8.99
+        Tax:                      0.56
+        Total:                    9.55
+    Result: P
