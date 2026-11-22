@@ -26,3 +26,6 @@ the next customer in line will use the kiosk.
 - Kiosk can only handle up to 5 customers
 - Customer cannot select an item that does not exist
 - only a single receipts.txt file is outputted for all the customers
+
+## Github Link
+https://github.com/wdarrigo6398/coffee-shop-kiosk
