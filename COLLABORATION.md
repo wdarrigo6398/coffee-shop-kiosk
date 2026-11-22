@@ -6,3 +6,4 @@
 | D'Arrigo | 2026-11-21 | remove-item         | T7-8   | D'Arrigo | https://github.com/wdarrigo6398/coffee-shop-kiosk/pull/5  |
 | D'Arrigo | 2026-11-22 | multiple-customers  | T9-10  | D'Arrigo | https://github.com/wdarrigo6398/coffee-shop-kiosk/pull/6  |
 | D'Arrigo | 2026-11-22 | calculate-totals    | T11-13 | D'Arrigo | https://github.com/wdarrigo6398/coffee-shop-kiosk/pull/7  |
+| D'Arrigo | 2026-11-22 | print-receipts      | T14-15 | D'Arrigo | https://github.com/wdarrigo6398/coffee-shop-kiosk/pull/7  |
